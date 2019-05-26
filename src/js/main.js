@@ -9,17 +9,19 @@ var myObjectTexture = function (color, wireframe) {
     return new THREE.MeshPhongMaterial({color: color, shininess: 10, side: THREE.DoubleSide, wireframe: wireframe })
 };
 var scene = new THREE.Scene(),
-camera,
-light,
-renderer;
+    leftLight = new THREE.SpotLight( 'red', 0.4 ),
+    rightLight = new THREE.SpotLight( 'blue', 0.4 ),
+    camera,
+    light,
+    renderer;
 
 var sceneWrapp = function () {
     var geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
-    var material = new THREE.MeshPhongMaterial({color: 'blue', shininess: 10, side: THREE.DoubleSide, wireframe:true });
+    var material = new THREE.MeshPhongMaterial({color: 'white', shininess: 0, side: THREE.DoubleSide, wireframe:false });
 
     var sceneWrapp = new THREE.Mesh(geometry, material);
     sceneWrapp.rotation.x = Math.PI / 2;
-    sceneWrapp.position.y = -100;
+    sceneWrapp.position.y = -50;
 
     scene.add(sceneWrapp);
 }
@@ -136,27 +138,45 @@ loader.load( myObject, function ( gltf ) {
 });
 
 var init = function() {
-    // scene.background = new THREE.Color().setRGB( 66, 89, 24 );
-    scene.fog = new THREE.Fog( scene.background, 0.1, 40000 );
+    scene.background = new THREE.Color().setRGB( 125, 125, 125 );
+    scene.fog = new THREE.Fog( scene.background, 0.1, 10000 );
 
     // create an locate the camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 40;
+    camera.position.z = 140;
     camera.position.set(0, 100, -140);
 
     var controls = new OrbitControls( camera );
 
     //THIS IS IMPORTANT !!!
-    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
-    // hemiLight.color.setRGB( 255, 255, 255 );
-    // hemiLight.groundColor.setRGB( 0, 0, 0 );
-    hemiLight.position.set( 0, 0, 0 );
+    var hemiLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     scene.add( hemiLight );
+
+    leftLight.position.set(150,75,50);
+    leftLight.angle = 0.5;
+    leftLight.penumbra = 0.2;
+    leftLight.distance = 150;
+    leftLight.castShadow = true;
+    scene.add( leftLight );
+
+    var leftLightHelper = new THREE.SpotLightHelper(leftLight)
+    scene.add( leftLightHelper );
+
+    rightLight.position.set(150,100,-50);
+    rightLight.angle = 0.5;
+    rightLight.penumbra = 0.2;
+    rightLight.distance = 150;
+    rightLight.castShadow = true;
+    scene.add( rightLight );
+
+    var rightLightHelper = new THREE.SpotLightHelper(rightLight)
+    scene.add( rightLightHelper );
 
     sceneWrapp();
 
+
     // create the renderer
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     document.body.appendChild(renderer.domElement);
@@ -166,7 +186,8 @@ var init = function() {
 // main animation loop - calls 50-60 times per second.
 var mainLoop = function() {
     renderer.render(scene, camera);
-
+    leftLight.rotation.y += 0.005;
+    rightLight.rotation.y -= 0.005;
     requestAnimationFrame(mainLoop);
 
 };
