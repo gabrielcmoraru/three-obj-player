@@ -213,8 +213,14 @@ var init = function() {
     renderer.setPixelRatio( window.devicePixelRatio );
 
     document.body.appendChild(renderer.domElement);
+    window.addEventListener( 'resize', onWindowResize, false );
 };
 
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
 // main animation loop - calls 50-60 times per second.
 var mainLoop = function() {
