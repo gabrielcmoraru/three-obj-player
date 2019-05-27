@@ -15,6 +15,8 @@ var scene = new THREE.Scene(),
     backLight = new THREE.SpotLight( 'white', 1 ),
     camera,
     light,
+    mouse,
+    center,
     renderer;
 
 var sceneWrapp = function () {
@@ -149,7 +151,8 @@ var init = function() {
     var controls = new OrbitControls( camera );
     camera.position.z = 100;
     camera.position.set(140, 120, -140);
-
+    center = new THREE.Vector3();
+    center.z = -500;
     controls.update();
     controls.enableDamping = true;
     controls.dampingFactor = 0.5;
@@ -214,6 +217,9 @@ var init = function() {
 
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
+
+    // mouse = new THREE.Vector3(0, 0, 1);
+    // document.addEventListener( 'mousemove', onMouseMove, false );
 };
 
 function onWindowResize() {
@@ -222,10 +228,18 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+// function onMouseMove( e ) {
+//     mouse.x = ( e.clientX - window.innerWidth / 2 );
+//     mouse.y = ( e.clientY - window.innerHeight / 2 );
+// }
+
 // main animation loop - calls 50-60 times per second.
 var mainLoop = function() {
     threeObj[0].update();
     requestAnimationFrame(mainLoop);
+    // camera.position.x += ( -mouse.x - camera.position.x ) * 0.009;
+    // camera.position.y += ( mouse.y - camera.position.y ) * 0.009;
+
     renderer.render(scene, camera);
 
     // scene.rotation.y -= 0.001;
